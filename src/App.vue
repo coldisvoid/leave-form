@@ -1,18 +1,32 @@
 <template>
   <div id="app">
 <!-- Form -->
-<el-button  @click="dialogFormVisible = true">新建</el-button>
+<el-button  @click="addDialogFormVisible = true">新建</el-button>
 
-<el-dialog title="收货地址" :visible.sync="dialogFormVisible">
-  <el-form :model="dialogForm">
+<el-dialog title="新增请假单" :visible.sync="addDialogFormVisible">
+  <el-form :model="addDialogForm">
     <el-form-item label="姓名" :label-width="formLabelWidth">
-      <el-input v-model="dialogForm.name" autocomplete="off"></el-input>
+      <el-input v-model="addDialogForm.name" autocomplete="off"></el-input>
     </el-form-item>
 
   </el-form>
   <div slot="footer" class="dialog-footer">
     <el-button @click="dialogFormVisible = false">取 消</el-button>
-    <el-button type="primary" @click="submitDialogForm()">确 定</el-button>
+    <el-button type="primary" @click="submitAddDialogForm()">确 定</el-button>
+  </div>
+</el-dialog>
+
+
+<el-dialog title="更新请假单" :visible.sync="updateDialogFormVisible">
+  <el-form :model="updateDialogForm">
+    <el-form-item label="姓名" :label-width="formLabelWidth">
+      <el-input v-model="updateDialogForm.name" autocomplete="off"></el-input>
+    </el-form-item>
+
+  </el-form>
+  <div slot="footer" class="dialog-footer">
+    <el-button @click="updateDialogFormVisible = false">取 消</el-button>
+    <el-button type="primary" @click="submitUpdateDialogForm()">确 定</el-button>
   </div>
 </el-dialog>
 
@@ -22,8 +36,8 @@
       :row-key="row => { return row.id }"
       style="width: 100%">
       <el-table-column
-        prop="email"
-        label="email"
+        prop="id"
+        label="id"
         width="180">
       </el-table-column>
       <el-table-column
@@ -54,27 +68,18 @@ export default {
 
   data(){
     return{
-        dialogTableVisible: false,
-        dialogFormVisible: false,
-        dialogForm:{
-          name:"",
-        },
-        leaveform: {
-          name: '',
-          region: '',
-          date1: '',
-          date2: '',
-          delivery: false,
-          type: [],
-          resource: '',
-          desc: ''
+      //新增
+        addDialogFormVisible: false,
+        addDialogForm:{
         },
         formLabelWidth: '120px',
+      //列表
       leaveForms:[],
-      form: {
-        name: '',
-        desc: ''
-      }
+      //修改
+      updateDialogFormVisible: false,
+      updateDialogForm:{
+        
+      },
 
     }
   },
@@ -82,57 +87,54 @@ export default {
         this.$http.get('users').then(
           response => {
             this.leaveForms = response.data
-            console.log(this.leaveForms)
           }
         ).catch(e => { console.log(e) })
   },
   methods: {
-
-    showForm(){
+    //
+    getFormList(){
         setTimeout(() =>{
         this.$http.get('users').then(
           response => {
             this.leaveForms = response.data
-            console.log(this.leaveForms)
           }
         ).catch(e => { console.log(e) })
       },250);
 
       
     },
-    saveForm(){
-      this.$http.post('users',{
-        name:this.dialogForm.name,
-      }).then(
-        response => {
-          console.log(response)
-        }
+    addForm(form){
+      this.$http.post('users',form).then(
+        // response => {
+        //   console.log(response)
+        // }
       ).catch(e => { console.log(e) })
-      this.showForm()
+      this.getFormList()
     },
-      onSubmit() {
-        console.log('submit!');
-        this.saveForm();
-      },
-      handleClick(row) {
-        console.log(row);
-      },
+
       handleEdit(index, row) {
-        console.log(index, row);
+        this.updateDialogForm={...this.leaveForms[index]}
+        console.log("leaveForms",this.leaveForms,row)
+        this.updateDialogFormVisible=true
+
       },
       handleDelete(index, row) {
         console.log("Delete:",index, row.id);
         this.$http.delete('users/'+row.id).then(
-          response => {
-            console.log(response)
-          }
+          // response => {
+          //   console.log(response)
+          // }
         ).catch(e => { console.log(e) })
-        this.showForm()
+        this.getFormList()
 
       },
-    submitDialogForm(){
-      this.saveForm()
+    submitAddDialogForm(){
+      this.addForm(this.addDialogForm)
       this.dialogFormVisible = false;
+    },
+    submitUpdateDialogForm(){
+      this.addForm(this.updateDialogForm)
+      this.updateDialogFormVisible = false;
     },
     },
 
