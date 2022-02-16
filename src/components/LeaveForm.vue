@@ -1,6 +1,6 @@
 <template>
-  <div id="app">
-    <el-form ref="form" :model="form" label-width="80px">
+<div>
+      <el-form ref="form" :model="form" label-width="80px">
       <el-form-item label="活动名称">
         <el-input v-model="form.name"></el-input>
       </el-form-item>
@@ -12,52 +12,18 @@
         <el-button>取消</el-button>
       </el-form-item>
     </el-form>
-    <hello-world></hello-world>
-    <!-- 列表 -->
-    <el-table
-      :data="leaveForms"
-      :row-key="row => { return row.id }"
-      style="width: 100%">
-      <el-table-column
-        prop="email"
-        label="email"
-        width="180">
-      </el-table-column>
-      <el-table-column
-        prop="name"
-        label="姓名"
-        width="180">
-      </el-table-column>
-      <el-table-column label="操作">
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-  </div>
+    </div>
 </template>
 
 <script>
-
 export default {
-  name: 'App',
-
-  data(){
+    data(){
     return{
-      
       leaveForms:[],
       form: {
         name: '',
         desc: ''
       }
-
     }
   },
   created () {
@@ -68,7 +34,7 @@ export default {
           }
         ).catch(e => { console.log(e) })
   },
-  methods: {
+    methods: {
     showForm(){
         setTimeout(() =>{
         this.$http.get('users').then(
@@ -113,7 +79,6 @@ export default {
 
       }
     },
-
 }
 </script>
 
