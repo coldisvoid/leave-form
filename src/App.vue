@@ -1,18 +1,21 @@
 <template>
   <div id="app">
-    <el-form ref="form" :model="form" label-width="80px">
-      <el-form-item label="活动名称">
-        <el-input v-model="form.name"></el-input>
-      </el-form-item>
-      <el-form-item label="email">
-        <el-input type="textarea" v-model="form.desc"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit">立即创建</el-button>
-        <el-button>取消</el-button>
-      </el-form-item>
-    </el-form>
-    <hello-world></hello-world>
+<!-- Form -->
+<el-button  @click="dialogFormVisible = true">新建</el-button>
+
+<el-dialog title="收货地址" :visible.sync="dialogFormVisible">
+  <el-form :model="dialogForm">
+    <el-form-item label="姓名" :label-width="formLabelWidth">
+      <el-input v-model="dialogForm.name" autocomplete="off"></el-input>
+    </el-form-item>
+
+  </el-form>
+  <div slot="footer" class="dialog-footer">
+    <el-button @click="dialogFormVisible = false">取 消</el-button>
+    <el-button type="primary" @click="submitDialogForm()">确 定</el-button>
+  </div>
+</el-dialog>
+
     <!-- 列表 -->
     <el-table
       :data="leaveForms"
@@ -51,7 +54,22 @@ export default {
 
   data(){
     return{
-      
+        dialogTableVisible: false,
+        dialogFormVisible: false,
+        dialogForm:{
+          name:"",
+        },
+        leaveform: {
+          name: '',
+          region: '',
+          date1: '',
+          date2: '',
+          delivery: false,
+          type: [],
+          resource: '',
+          desc: ''
+        },
+        formLabelWidth: '120px',
       leaveForms:[],
       form: {
         name: '',
@@ -69,6 +87,7 @@ export default {
         ).catch(e => { console.log(e) })
   },
   methods: {
+
     showForm(){
         setTimeout(() =>{
         this.$http.get('users').then(
@@ -83,8 +102,7 @@ export default {
     },
     saveForm(){
       this.$http.post('users',{
-        name:this.form.name,
-        email:this.form.desc
+        name:this.dialogForm.name,
       }).then(
         response => {
           console.log(response)
@@ -111,7 +129,11 @@ export default {
         ).catch(e => { console.log(e) })
         this.showForm()
 
-      }
+      },
+    submitDialogForm(){
+      this.saveForm()
+      this.dialogFormVisible = false;
+    },
     },
 
 }
