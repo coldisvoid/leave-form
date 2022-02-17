@@ -1,16 +1,100 @@
 <template>
   <div id="app">
+        <span>输入姓名搜索</span>
         <el-input type="text" placeholder="请输入姓名的关键字进行查找" style="width: 40%" v-model="searchname">
       <el-button slot="append" icon="el-icon-search" @click="SearchEmps"></el-button>
     </el-input>
     <!-- Form -->
     <el-button @click="addDialogFormVisible = true">新建</el-button>
 
-    <el-dialog title="新增请假单" :visible.sync="addDialogFormVisible">
+    <el-dialog title="新增请假单" :visible.sync="addDialogFormVisible" width="90%">
       <el-form :model="addDialogForm">
-        <el-form-item label="姓名" :label-width="formLabelWidth">
+        <el-form-item label="请假人员" :label-width="formLabelWidth">
           <el-input v-model="addDialogForm.name" autocomplete="off"></el-input>
         </el-form-item>
+        <el-form-item label="部门" :label-width="formLabelWidth">
+          <el-input v-model="addDialogForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="办公地点" :label-width="formLabelWidth">
+          <el-input v-model="addDialogForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="人员类别" :label-width="formLabelWidth">
+          <el-input v-model="addDialogForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="入职时间" :label-width="formLabelWidth">
+            <el-date-picker
+              v-model="addDialogForm.hireDate"
+              type="date"
+              placeholder="选择日期">
+            </el-date-picker>
+        </el-form-item>
+        <el-form-item label="填写时间" :label-width="formLabelWidth">
+            <el-date-picker
+              v-model="addDialogForm.hireDate"
+              type="date"
+              placeholder="选择日期">
+            </el-date-picker>
+        </el-form-item>
+        <el-form-item label="请假类别	" :label-width="formLabelWidth">
+          <el-input v-model="addDialogForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="职务	" :label-width="formLabelWidth">
+          <el-input v-model="addDialogForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="出生年月" :label-width="formLabelWidth">
+            <el-date-picker
+              v-model="addDialogForm.hireDate"
+              type="date"
+              placeholder="选择日期">
+            </el-date-picker>
+        </el-form-item>
+        <el-form-item label="毕业时间" :label-width="formLabelWidth">
+            <el-date-picker
+              v-model="addDialogForm.hireDate"
+              type="date"
+              placeholder="选择日期">
+            </el-date-picker>
+        </el-form-item>
+        <el-form-item label="请假事由	" :label-width="formLabelWidth">
+          <el-input v-model="addDialogForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="请假时间" :label-width="formLabelWidth">
+            <el-date-picker
+              v-model="addDialogForm.hireDate"
+              type="date"
+              placeholder="选择日期">
+            </el-date-picker>
+        </el-form-item>
+        <el-form-item label=" " :label-width="formLabelWidth">
+          <el-input v-model="addDialogForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label=" " :label-width="formLabelWidth">
+            <el-date-picker
+              v-model="addDialogForm.hireDate"
+              type="date"
+              placeholder="选择日期">
+            </el-date-picker>
+        </el-form-item>
+        <el-form-item label="	" :label-width="formLabelWidth">
+          <el-input v-model="addDialogForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="天数" :label-width="formLabelWidth">
+          <el-input v-model="addDialogForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="销假时间" :label-width="formLabelWidth">
+            <el-date-picker
+              v-model="addDialogForm.hireDate"
+              type="date"
+              placeholder="选择日期">
+            </el-date-picker>
+        </el-form-item>
+        <el-form-item label="	" :label-width="formLabelWidth">
+          <el-input v-model="addDialogForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="天数" :label-width="formLabelWidth">
+          <el-input v-model="addDialogForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -33,6 +117,15 @@
             v-model="updateDialogForm.department"
             autocomplete="off"
           ></el-input>
+        </el-form-item>
+        <el-form-item label="入职日期" :label-width="formLabelWidth">
+          <div class="block">
+            <el-date-picker
+              v-model="updateDialogForm.hireDate"
+              type="date"
+              placeholder="选择日期">
+            </el-date-picker>
+          </div>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -57,6 +150,7 @@
       <el-table-column prop="id" label="id" width="180"> </el-table-column>
       <el-table-column prop="name" label="姓名" width="180"> </el-table-column>
       <el-table-column prop="department" label="部门" width="180"> </el-table-column>
+      <el-table-column prop="hireDate" label="入职日期" width="180"> </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" @click="handleEdit(scope.$index, scope.row)"
@@ -178,6 +272,10 @@ export default {
     },
     handleCurrentChange(val) {
       this.pagination.page=val
+      if(this.searchname!=""){
+        this.SearchEmps()
+        return
+      }
       this.getNewPage()
     },
     getNewPage(){
@@ -195,6 +293,10 @@ export default {
     } ,
     //查询
     SearchEmps(){
+      if(this.searchname==""){
+        this.getNewPage()
+        return
+      }
       setTimeout(()=>{
         this.$http.get("users/search/" + this.pagination.page +"/"+this.pagination.size+
         "/"+this.searchname)
