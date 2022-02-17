@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+        <el-input type="text" placeholder="请输入姓名的关键字进行查找" style="width: 40%" v-model="searchname">
+      <el-button slot="append" icon="el-icon-search" @click="SearchEmps"></el-button>
+    </el-input>
     <!-- Form -->
     <el-button @click="addDialogFormVisible = true">新建</el-button>
 
@@ -25,6 +28,12 @@
             autocomplete="off"
           ></el-input>
         </el-form-item>
+        <el-form-item label="部门" :label-width="formLabelWidth">
+          <el-input
+            v-model="updateDialogForm.department"
+            autocomplete="off"
+          ></el-input>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="updateDialogFormVisible = false">取 消</el-button>
@@ -47,6 +56,7 @@
     >
       <el-table-column prop="id" label="id" width="180"> </el-table-column>
       <el-table-column prop="name" label="姓名" width="180"> </el-table-column>
+      <el-table-column prop="department" label="部门" width="180"> </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" @click="handleEdit(scope.$index, scope.row)"
@@ -96,6 +106,8 @@ export default {
         size:5,
         count:0
       },
+      //查询
+      searchname:""
 
     };
   },
@@ -180,7 +192,21 @@ export default {
             });
       },250)
 
-    }  
+    } ,
+    //查询
+    SearchEmps(){
+      setTimeout(()=>{
+        this.$http.get("users/search/" + this.pagination.page +"/"+this.pagination.size+
+        "/"+this.searchname)
+            .then((res) => {
+              this.leaveForms = res.data.result;
+              this.pagination.count = res.data.count;
+          })
+            .catch((e) => {
+              console.log(e);
+            });
+      },250)
+    }
   }
 }
 </script>
