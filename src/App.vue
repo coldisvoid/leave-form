@@ -1,20 +1,28 @@
 <template>
   <div id="app">
-    <span>输入姓名搜索</span>
-    <el-input
-      type="text"
-      placeholder="请输入姓名的关键字进行查找"
-      style="width: 40%"
-      v-model="searchname"
-    >
-      <el-button
-        slot="append"
-        icon="el-icon-search"
-        @click="SearchEmps"
-      ></el-button>
-    </el-input>
+    <el-form :inline="true" :model="searchForm" class="demo-form-inline">
+      <el-form-item label="姓名">
+        <el-input
+          v-model="searchForm.searchname"
+          placeholder="请假人姓名"
+        ></el-input>
+      </el-form-item>
+      <el-form-item label="请假类型">
+        <el-select v-model="searchForm.leaveType" placeholder="请假类型">
+          <el-option
+            v-for="item in leaveTypeOptions"
+            :label="item.lable"
+            :key="item.lable"
+            :value="item.value"
+          ></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="SearchEmps">查询</el-button>
+      </el-form-item>
+      <el-button @click="addDialogFormVisible = true">新建</el-button>
+    </el-form>
     <!-- Form -->
-    <el-button @click="addDialogFormVisible = true">新建</el-button>
 
     <el-dialog
       title="新增请假单"
@@ -121,7 +129,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="请假事由	" :label-width="formLabelWidth">
+        <el-form-item label="请假事由" :label-width="formLabelWidth">
           <el-input
             v-model="addDialogForm.reason"
             autocomplete="off"
@@ -224,7 +232,7 @@
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button @click="addDialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="submitAddDialogForm()"
           >确 定</el-button
         >
@@ -269,7 +277,10 @@
           ></el-col>
           <el-col :span="12">
             <el-form-item label="请假类别	" :label-width="formLabelWidth">
-              <el-select v-model="updateDialogForm.leaveType" placeholder="请选择">
+              <el-select
+                v-model="updateDialogForm.leaveType"
+                placeholder="请选择"
+              >
                 <el-option
                   v-for="item in leaveTypeOptions"
                   :key="item.value"
@@ -438,7 +449,7 @@
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button @click="updateDialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="submitUpdateDialogForm()"
           >确 定</el-button
         >
@@ -448,6 +459,7 @@
     <!-- 列表 -->
 
     <el-table
+      height="500"
       :data="leaveForms"
       :row-key="
         (row) => {
@@ -460,7 +472,9 @@
       <el-table-column prop="name" label="姓名" width="180"> </el-table-column>
       <el-table-column prop="department" label="部门" width="180">
       </el-table-column>
-      <el-table-column prop="hireDate" label="入职日期" width="180">
+      <el-table-column prop="leaveType" label="请假类型" width="180">
+      </el-table-column>
+      <el-table-column prop="reason" label="请假事由" width="180">
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
@@ -505,9 +519,8 @@ export default {
         leaveTotal: 0,
         leaveStart: null,
         leaveEnd: null,
-        leaveStartPeriod:null,
-        leaveEndPeriod:null,
-
+        leaveStartPeriod: null,
+        leaveEndPeriod: null,
       },
       formLabelWidth: "120px",
       //列表
@@ -522,9 +535,21 @@ export default {
         count: 0,
       },
       //查询
-      searchname: "",
+      searchForm: {
+        searchname: "",
+        leaveType: "",
+      },
+      savedSearchForm: {
+        searchname: "",
+        leaveType: "",
+      },
+
       //leaveType
       leaveTypeOptions: [
+        {
+          value: "",
+          label: "",
+        },
         {
           value: "病假",
           label: "病假",
@@ -553,42 +578,42 @@ export default {
   watch: {
     addDialogForm: {
       handler(val) {
-          const start = dayjs(val.leaveStart);
-          const end = dayjs(val.leaveEnd);
-          if(!isNaN(end.diff(start,'day'))){
-            let res=end.diff(start,'day')
-            if(val.leaveStartPeriod=="下午"){
-              res-=0.5
-            }
-            if(val.leaveEndPeriod=="上午"){
-              res+=0.5
-            }else if(val.leaveEndPeriod=="下午"){
-              res+=1
-            }
-            val.leaveTotal=res
+        const start = dayjs(val.leaveStart);
+        const end = dayjs(val.leaveEnd);
+        if (!isNaN(end.diff(start, "day"))) {
+          let res = end.diff(start, "day");
+          if (val.leaveStartPeriod == "下午") {
+            res -= 0.5;
           }
-          console.log("change",val)
+          if (val.leaveEndPeriod == "上午") {
+            res += 0.5;
+          } else if (val.leaveEndPeriod == "下午") {
+            res += 1;
+          }
+          val.leaveTotal = res;
+        }
+        console.log("change", val);
       },
       immediate: true,
-      deep: true, // 可以深度检测到 person 对象的属性值的变化
+      deep: true, // 可以深度检测到对象的属性值的变化
     },
     updateDialogForm: {
       handler(val) {
-          const start = dayjs(val.leaveStart);
-          const end = dayjs(val.leaveEnd);
-          if(!isNaN(end.diff(start,'day'))){
-            let res=end.diff(start,'day')
-            if(val.leaveStartPeriod=="下午"){
-              res-=0.5
-            }
-            if(val.leaveEndPeriod=="上午"){
-              res+=0.5
-            }else if(val.leaveEndPeriod=="下午"){
-              res+=1
-            }
-            val.leaveTotal=res
+        const start = dayjs(val.leaveStart);
+        const end = dayjs(val.leaveEnd);
+        if (!isNaN(end.diff(start, "day"))) {
+          let res = end.diff(start, "day");
+          if (val.leaveStartPeriod == "下午") {
+            res -= 0.5;
           }
-          console.log("change",val)
+          if (val.leaveEndPeriod == "上午") {
+            res += 0.5;
+          } else if (val.leaveEndPeriod == "下午") {
+            res += 1;
+          }
+          val.leaveTotal = res;
+        }
+        console.log("change", val);
       },
       immediate: true,
       deep: true, // 可以深度检测到 person 对象的属性值的变化
@@ -601,25 +626,11 @@ export default {
     //
     getFormList() {
       this.getNewPage();
-      // setTimeout(() => {
-      //   this.$http
-      //     .get("users")
-      //     .then((response) => {
-      //       this.leaveForms = response.data;
-      //     })
-      //     .catch((e) => {
-      //       console.log(e);
-      //     });
-      // }, 250);
     },
     addForm(form) {
       this.$http
         .post("users", form)
-        .then
-        // response => {
-        //   console.log(response)
-        // }
-        ()
+        .then()
         .catch((e) => {
           console.log(e);
         });
@@ -656,23 +667,31 @@ export default {
     //分页
     handleSizeChange(val) {
       this.pagination.size = val;
-      this.pagination.page = 1;
       this.getNewPage();
     },
     handleCurrentChange(val) {
       this.pagination.page = val;
-      if (this.searchname != "") {
-        this.SearchEmps();
-        return;
-      }
       this.getNewPage();
     },
     getNewPage() {
       setTimeout(() => {
+        //保存查询用参数
+
         this.$http
-          .get("users/" + this.pagination.page + "/" + this.pagination.size)
+          .get("users/search/", {
+            params: {
+              name: this.savedSearchForm.searchname,
+              page: this.pagination.page,
+              size: this.pagination.size,
+              leaveType: this.savedSearchForm.leaveType,
+            },
+          })
           .then((res) => {
             this.leaveForms = res.data.result;
+            if (this.leaveForms.length == 0 && this.pagination.page > 1) {
+              this.pagination.page -= 1;
+              this.getNewPage();
+            }
             this.pagination.count = res.data.count;
           })
           .catch((e) => {
@@ -682,28 +701,9 @@ export default {
     },
     //查询
     SearchEmps() {
-      if (this.searchname == "") {
-        this.getNewPage();
-        return;
-      }
-      setTimeout(() => {
-        this.$http
-          .get(
-            "users/search/" +
-              this.pagination.page +
-              "/" +
-              this.pagination.size +
-              "/" +
-              this.searchname
-          )
-          .then((res) => {
-            this.leaveForms = res.data.result;
-            this.pagination.count = res.data.count;
-          })
-          .catch((e) => {
-            console.log(e);
-          });
-      }, 250);
+      this.savedSearchForm.leaveType = this.searchForm.leaveType;
+      this.savedSearchForm.searchname = this.searchForm.searchname;
+      this.getNewPage();
     },
   },
 };
