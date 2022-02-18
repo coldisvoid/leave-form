@@ -20,7 +20,7 @@
       <el-form-item>
         <el-button type="primary" @click="SearchEmps">查询</el-button>
       </el-form-item>
-      <el-button @click="addDialogFormVisible = true">新建</el-button>
+      <el-button type="primary" @click="addDialogFormVisible = true">新建</el-button>
     </el-form>
     <!-- Form -->
 
@@ -478,7 +478,7 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" @click="handleEdit(scope.$index, scope.row)"
+          <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)"
             >编辑</el-button
           >
           <el-button
@@ -486,6 +486,9 @@
             type="danger"
             @click="handleDelete(scope.$index, scope.row)"
             >删除</el-button
+          >
+                    <el-button size="mini" type="info" @click="handleRecord(scope.$index, scope.row)"
+            >查看历史变更</el-button
           >
         </template>
       </el-table-column>
