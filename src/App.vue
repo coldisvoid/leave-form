@@ -309,6 +309,9 @@
 </template>
 
 <script>
+var dayjs = require("dayjs");
+//import dayjs from 'dayjs' // ES 2015
+dayjs().format();
 export default {
   name: "App",
 
@@ -316,7 +319,14 @@ export default {
     return {
       //新增
       addDialogFormVisible: false,
-      addDialogForm: {},
+      addDialogForm: {
+        leaveTotal: 0,
+        leaveStart: null,
+        leaveEnd: null,
+        leaveStartPeriod:null,
+        leaveEndPeriod:null,
+
+      },
       formLabelWidth: "120px",
       //列表
       leaveForms: [],
@@ -357,6 +367,30 @@ export default {
         },
       ],
     };
+  },
+  watch: {
+    addDialogForm: {
+      handler(val,oldVal) {
+        console.log(oldVal)
+          const start = dayjs(val.leaveStart);
+          const end = dayjs(val.leaveEnd);
+          if(!isNaN(end.diff(start,'day'))){
+            let res=end.diff(start,'day')
+            if(val.leaveStartPeriod=="下午"){
+              res-=0.5
+            }
+            if(val.leaveEndPeriod=="上午"){
+              res+=0.5
+            }else if(val.leaveEndPeriod=="下午"){
+              res+=1
+            }
+            this.addDialogForm.leaveTotal=res
+          }
+      },
+      immediate: true,
+      deep: true, // 可以深度检测到 person 对象的属性值的变化
+    },
+
   },
   created() {
     this.getNewPage();
