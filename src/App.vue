@@ -20,7 +20,9 @@
       <el-form-item>
         <el-button type="primary" @click="SearchEmps">查询</el-button>
       </el-form-item>
-      <el-button type="primary" @click="addDialogFormVisible = true">新建</el-button>
+      <el-button type="primary" @click="addDialogFormVisible = true"
+        >新建</el-button
+      >
     </el-form>
     <!-- Form -->
 
@@ -455,14 +457,33 @@
         >
       </div>
     </el-dialog>
-<!-- history -->
-<el-dialog title="变更历史" :visible.sync="historyDialogTableVisible">
-  <el-table :data="historyForms">
-    <el-table-column property="id" label="id" width="150"></el-table-column>
-    <el-table-column property="name" label="姓名" width="200"></el-table-column>
-    <el-table-column property="reason" label="理由"></el-table-column>
-  </el-table>
-</el-dialog>
+    <!-- history -->
+    <el-dialog
+      title="变更历史"
+      width="90%"
+      top="5vh"
+      height="250"
+      :visible.sync="historyDialogTableVisible"
+    >
+      <el-table :data="historyForms">
+        <el-table-column property="id" label="id" width="150"></el-table-column>
+        <el-table-column
+          fixed
+          :formatter="createTimeFormatter"
+          property="createTime"
+          label="提交时间"
+        ></el-table-column>
+        <el-table-column property="name" label="姓名"></el-table-column>
+        <el-table-column
+          prop="department"
+          label="部门"
+          width="180"
+        ></el-table-column>
+        <el-table-column prop="leaveType" label="请假类型" width="180">
+        </el-table-column>
+        <el-table-column property="reason" label="请假事由"></el-table-column>
+      </el-table>
+    </el-dialog>
     <!-- 列表 -->
 
     <el-table
@@ -485,7 +506,10 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)"
+          <el-button
+            size="mini"
+            type="primary"
+            @click="handleEdit(scope.$index, scope.row)"
             >编辑</el-button
           >
           <el-button
@@ -494,7 +518,10 @@
             @click="handleDelete(scope.$index, scope.row)"
             >删除</el-button
           >
-                    <el-button size="mini" type="info" @click="handleRecord(scope.$index, scope.row)"
+          <el-button
+            size="mini"
+            type="info"
+            @click="handleRecord(scope.$index, scope.row)"
             >查看历史变更</el-button
           >
         </template>
@@ -554,7 +581,7 @@ export default {
         leaveType: "",
       },
       //history
-      historyForms:[],
+      historyForms: [],
       historyDialogTableVisible: false,
       //leaveType
       leaveTypeOptions: [
@@ -648,19 +675,26 @@ export default {
         });
       this.getFormList();
     },
-handleRecord(index,row){
-  this.historyDialogTableVisible=true
+    handleRecord(index, row) {
+      this.historyDialogTableVisible = true;
       setTimeout(() => {
         this.$http
-          .get("users/history/"+row.id)
+          .get("users/history/" + row.id)
           .then((res) => {
-            this.historyForms=res.data
+            this.historyForms = res.data;
+            console.log(res);
           })
           .catch((e) => {
             console.log(e);
           });
       }, 250);
-},
+    },
+    //
+    createTimeFormatter(row, column) {
+      var date = row[column.property];
+      var day = dayjs(date);
+      return day.format("YYYY-MM-DD HH:mm:ss");
+    },
     handleEdit(index, row) {
       this.updateDialogForm = { ...this.leaveForms[index] };
       console.log("leaveForms", this.leaveForms, row);
