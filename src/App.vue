@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" >
     <el-form :inline="true" :model="searchForm" class="demo-form-inline">
       <el-form-item label="姓名">
         <el-input
@@ -25,7 +25,6 @@
       >
     </el-form>
     <!-- Form -->
-
     <el-dialog
       title="新增请假单"
       :visible.sync="addDialogFormVisible"
@@ -133,6 +132,7 @@
         </el-row>
         <el-form-item label="请假事由" :label-width="formLabelWidth">
           <el-input
+          type="textarea"
             v-model="addDialogForm.reason"
             autocomplete="off"
           ></el-input>
@@ -190,6 +190,7 @@
           <el-col :span="4">
             <el-form-item label="天数" :label-width="formLabelWidth">
               <el-input
+              disabled
                 v-model="addDialogForm.leaveTotal"
                 autocomplete="off"
               ></el-input> </el-form-item
@@ -226,6 +227,7 @@
           <el-col :span="5">
             <el-form-item label="天数" :label-width="formLabelWidth">
               <el-input
+              disabled
                 v-model="addDialogForm.returnTotal"
                 autocomplete="off"
               ></el-input>
@@ -235,7 +237,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="addDialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitAddDialogForm()"
+        <el-button type="primary" @click="submitAddDialogForm"
           >确 定</el-button
         >
       </div>
@@ -350,6 +352,7 @@
         </el-row>
         <el-form-item label="请假事由	" :label-width="formLabelWidth">
           <el-input
+          type="textarea"
             v-model="updateDialogForm.reason"
             autocomplete="off"
           ></el-input>
@@ -405,8 +408,9 @@
               </el-select> </el-form-item
           ></el-col>
           <el-col :span="4">
-            <el-form-item label="天数" :label-width="formLabelWidth">
+            <el-form-item label="天数" :label-width="formLabelWidth" >
               <el-input
+              disabled
                 v-model="updateDialogForm.leaveTotal"
                 autocomplete="off"
               ></el-input> </el-form-item
@@ -443,6 +447,7 @@
           <el-col :span="5">
             <el-form-item label="天数" :label-width="formLabelWidth">
               <el-input
+              disabled
                 v-model="updateDialogForm.returnTotal"
                 autocomplete="off"
               ></el-input>
@@ -452,9 +457,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="updateDialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitUpdateDialogForm()"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="submitUpdateDialogForm()">确 定</el-button>
       </div>
     </el-dialog>
     <!-- history -->
@@ -466,7 +469,7 @@
       :visible.sync="historyDialogTableVisible"
     >
       <el-table :data="historyForms">
-        <el-table-column property="id" label="id" width="150"></el-table-column>
+        <el-table-column property="id" label="记录编号" width="150"></el-table-column>
         <el-table-column
           fixed
           :formatter="createTimeFormatter"
@@ -484,6 +487,7 @@
         <el-table-column property="reason" label="请假事由"></el-table-column>
       </el-table>
     </el-dialog>
+
     <!-- 列表 -->
 
     <el-table
@@ -496,16 +500,18 @@
       "
       style="width: 100%"
     >
-      <el-table-column prop="id" label="id" width="180"> </el-table-column>
-      <el-table-column prop="name" label="姓名" width="180"> </el-table-column>
-      <el-table-column prop="department" label="部门" width="180">
+      <el-table-column prop="id" label="记录编号" > </el-table-column>
+      <el-table-column prop="name" label="姓名" > </el-table-column>
+      <el-table-column prop="department" label="部门" >
       </el-table-column>
-      <el-table-column prop="leaveType" label="请假类型" width="180">
+      <el-table-column prop="leaveType" label="请假类型" >
       </el-table-column>
-      <el-table-column prop="reason" label="请假事由" width="180">
+      <el-table-column prop="reason" label="请假事由" min-width="180" show-overflow-tooltip>
       </el-table-column>
-      <el-table-column label="操作">
-        <template slot-scope="scope">
+      <el-table-column label="操作" width="225"  fixed="right">
+
+        <template slot-scope="scope" >
+          <el-button-group>
           <el-button
             size="mini"
             type="primary"
@@ -522,8 +528,10 @@
             size="mini"
             type="info"
             @click="handleRecord(scope.$index, scope.row)"
-            >查看历史变更</el-button
+            >历史变更</el-button
           >
+          </el-button-group>
+
         </template>
       </el-table-column>
     </el-table>
@@ -553,18 +561,32 @@ export default {
       //新增
       addDialogFormVisible: false,
       addDialogForm: {
-        leaveTotal: 0,
+     
         leaveStart: null,
         leaveEnd: null,
         leaveStartPeriod: null,
         leaveEndPeriod: null,
+        leaveTotal:null,
+        returnToWork:null,
+        returnPeriod:null,
+        returnTotal:null,
       },
       formLabelWidth: "120px",
       //列表
       leaveForms: [],
       //修改
       updateDialogFormVisible: false,
-      updateDialogForm: {},
+      updateDialogForm: {
+
+leaveStart: null,
+        leaveEnd: null,
+        leaveStartPeriod: null,
+        leaveEndPeriod: null,
+        leaveTotal:null,
+        returnToWork:null,
+        returnPeriod:null,
+        returnTotal:null,
+      },
       //分页
       pagination: {
         page: 1,
@@ -601,7 +623,50 @@ export default {
           value: "年休假",
           label: "年休假",
         },
+        {
+          value: "产假",
+          label: "产假",
+        },
+        {
+          value: "陪产假",
+          label: "陪产假",
+        },
+        {
+          value: "丧假",
+          label: "丧假",
+        },
+        {
+          value: "婚假",
+          label: "婚假",
+        },
+        {
+          value: "计生假",
+          label: "计生假",
+        },
+        {
+          value: "流产假",
+          label: "流产假",
+        },
+        {
+          value: "出差休假",
+          label: "出差休假",
+        },
+        {
+          value: "特殊类别",
+          label: "特殊类别",
+        },
+        {
+          value: "加班换休",
+          label: "加班换休",
+        },
       ],
+      
+
+      //delete
+            deleteIndex:null,
+      deleteRow : null,
+      deleteDialogVisible:false,
+      //list
       PeriodOptions: [
         {
           value: "上午",
@@ -631,7 +696,21 @@ export default {
           }
           val.leaveTotal = res;
         }
-        console.log("change", val);
+        const returnDay =dayjs(val.returnToWork)
+                if (!isNaN(returnDay.diff(start, "day"))) {
+                
+          let ress = returnDay.diff(start, "day");
+         
+          if (val.leaveStartPeriod == "下午") {
+            ress -= 0.5;
+          }
+          if (val.returnPeriod == "上午") {
+            ress += 0.5;
+          } else if (val.returnPeriod == "下午") {
+            ress += 1;
+          }
+          val.returnTotal = ress;
+        }
       },
       immediate: true,
       deep: true, // 可以深度检测到对象的属性值的变化
@@ -652,7 +731,21 @@ export default {
           }
           val.leaveTotal = res;
         }
-        console.log("change", val);
+        const returnDay =dayjs(val.returnToWork)
+                if (!isNaN(returnDay.diff(start, "day"))) {
+                
+          let ress = returnDay.diff(start, "day");
+         
+          if (val.leaveStartPeriod == "下午") {
+            ress -= 0.5;
+          }
+          if (val.returnPeriod == "上午") {
+            ress += 0.5;
+          } else if (val.returnPeriod == "下午") {
+            ress += 1;
+          }
+          val.returnTotal = ress;
+        }
       },
       immediate: true,
       deep: true, // 可以深度检测到 person 对象的属性值的变化
@@ -662,6 +755,34 @@ export default {
     this.getNewPage();
   },
   methods: {
+
+      handleDelete(index, row) {
+        this.$confirm('此操作将永久删除该记录, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+      this.$http
+        .delete("users/" + row.id)
+        .then
+        ()
+        .catch((e) => {
+          console.log(e);
+        });
+      this.getFormList();
+
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+      },
+
     //
     getFormList() {
       this.getNewPage();
@@ -700,20 +821,9 @@ export default {
       console.log("leaveForms", this.leaveForms, row);
       this.updateDialogFormVisible = true;
     },
-    handleDelete(index, row) {
-      console.log("Delete:", index, row.id);
-      this.$http
-        .delete("users/" + row.id)
-        .then
-        // response => {
-        //   console.log(response)
-        // }
-        ()
-        .catch((e) => {
-          console.log(e);
-        });
-      this.getFormList();
-    },
+    //
+
+
     submitAddDialogForm() {
       this.addForm(this.addDialogForm);
       this.dialogFormVisible = false;
@@ -768,4 +878,8 @@ export default {
 </script>
 
 <style>
+#app{
+    margin: 2%;
+}
+
 </style>
