@@ -455,7 +455,14 @@
         >
       </div>
     </el-dialog>
-
+<!-- history -->
+<el-dialog title="变更历史" :visible.sync="historyDialogTableVisible">
+  <el-table :data="historyForms">
+    <el-table-column property="id" label="id" width="150"></el-table-column>
+    <el-table-column property="name" label="姓名" width="200"></el-table-column>
+    <el-table-column property="reason" label="理由"></el-table-column>
+  </el-table>
+</el-dialog>
     <!-- 列表 -->
 
     <el-table
@@ -546,7 +553,9 @@ export default {
         searchname: "",
         leaveType: "",
       },
-
+      //history
+      historyForms:[],
+      historyDialogTableVisible: false,
       //leaveType
       leaveTypeOptions: [
         {
@@ -639,7 +648,19 @@ export default {
         });
       this.getFormList();
     },
-
+handleRecord(index,row){
+  this.historyDialogTableVisible=true
+      setTimeout(() => {
+        this.$http
+          .get("users/history/"+row.id)
+          .then((res) => {
+            this.historyForms=res.data
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }, 250);
+},
     handleEdit(index, row) {
       this.updateDialogForm = { ...this.leaveForms[index] };
       console.log("leaveForms", this.leaveForms, row);
