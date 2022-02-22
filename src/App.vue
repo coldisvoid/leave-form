@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <!-- 查询输入框和按钮；创建按钮 -->
     <el-form :inline="true" :model="searchForm" class="demo-form-inline">
       <el-form-item label="姓名">
         <el-input
@@ -24,7 +25,7 @@
         >新建</el-button
       >
     </el-form>
-    <!-- 新增请假单 -->
+    <!-- 新增请假单的用户输入表单 -->
     <el-dialog
       title="新增请假单"
       :visible.sync="addDialogFormVisible"
@@ -240,7 +241,7 @@
         <el-button type="primary" @click="submitAddDialogForm">确 定</el-button>
       </div>
     </el-dialog>
-    <!-- 更新请假单 -->
+    <!-- 更新请假单的用户输入表单 -->
     <el-dialog
       title="更新请假单"
       :visible.sync="updateDialogFormVisible"
@@ -461,7 +462,7 @@
         >
       </div>
     </el-dialog>
-    <!-- 变更历史 -->
+    <!-- 变更历史的展示列表 -->
     <el-dialog
       title="变更历史"
       width="90%"
@@ -492,7 +493,7 @@
         <el-table-column property="reason" label="请假事由"></el-table-column>
       </el-table>
     </el-dialog>
-    <!-- 列表 -->
+    <!-- 请假单展示列表 -->
     <el-table
       height="500"
       :data="leaveForms"
@@ -539,7 +540,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- 分页 -->
+    <!-- 分页控制 -->
     <el-pagination
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
@@ -554,14 +555,16 @@
 </template>
 
 <script>
+//引入dayjs计算时间间隔
 var dayjs = require("dayjs");
 dayjs().format();
+
 export default {
   name: "App",
 
   data() {
     return {
-      //新增
+      //新增表单的数据
       addDialogFormVisible: false,
       addDialogForm: {
         leaveStart: null,
@@ -574,9 +577,9 @@ export default {
         returnTotal: null,
       },
       formLabelWidth: "120px",
-      //列表
+      //保存请假单展示列表
       leaveForms: [],
-      //修改
+      //修改表单的数据
       updateDialogFormVisible: false,
       updateDialogForm: {
         leaveStart: null,
@@ -588,13 +591,13 @@ export default {
         returnPeriod: null,
         returnTotal: null,
       },
-      //分页
+      //分页的参数
       pagination: {
-        page: 1,
-        size: 5,
-        count: 0,
+        page: 1,//当前页码
+        size: 5,//页大小
+        count: 0,//记录总数
       },
-      //查询
+      //查询用
       searchForm: {
         searchname: "",
         leaveType: "",
@@ -603,10 +606,10 @@ export default {
         searchname: "",
         leaveType: "",
       },
-      //history
+      //变更历史
       historyForms: [],
       historyDialogTableVisible: false,
-      //leaveType
+      //leaveType选项
       leaveTypeOptions: [
         {
           value: "",
@@ -661,12 +664,7 @@ export default {
           label: "加班换休",
         },
       ],
-
-      //delete
-      deleteIndex: null,
-      deleteRow: null,
-      deleteDialogVisible: false,
-      //list
+      //时间段选项
       PeriodOptions: [
         {
           value: "上午",
@@ -679,6 +677,7 @@ export default {
       ],
     };
   },
+  //当用户修改表单，重新计算天数
   watch: {
     addDialogForm: {
       handler(val) {
